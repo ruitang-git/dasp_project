@@ -21,7 +21,7 @@ cosin = 10^1.5;
 for j = 1:5
     for k = 1:N_seg
        noise_psd(k,j) = f(k,j)*f(k,j)';
-       if j ~= 1
+       if j == 1
            sigma_n2(k,j) = noise_psd(k,j);
        else
            sigma_n2(k,j) = alpha*sigma_n2(k,j-1)+(1-alpha)*noise_psd(k,j);   
