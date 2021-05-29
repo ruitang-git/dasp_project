@@ -17,6 +17,7 @@ cs2_ann = cs2+ann;
 % VAD
 % MMSE
 time_int = 0.02;% second
-noise_psd = mmse_based_noise_psd(x,fs,time_int);
+x = cs_ssn;
+sigma_n2 = mmse_based_noise_psd(x,fs,time_int);
 %% signal psd estimation
 %% multiple channel
