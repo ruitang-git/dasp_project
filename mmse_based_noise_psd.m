@@ -37,5 +37,5 @@ for j = 6:seg
         sigma_n2(k,j) = alpha*sigma_n2(k,j-1)+(1-alpha)*noise_psd(k,j);
     end
 end
-sigma_n2 = sigma_n2./(fs*N_seg);
+sigma_n2 = sigma_n2./(2*pi*N_seg);
 sigma_n2(2:end-1,:) = 2*sigma_n2(2:end-1,:);
