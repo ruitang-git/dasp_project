@@ -26,7 +26,12 @@ for j = M:col
     end
 end
 sigma_n2 = p_s;
-N = 96;
+N = 50;
+for k = 1:N-1
+    for l = 1:row
+        sigma_n2(l,k) = min(p_s(l,1:k));
+    end
+end
 for k = N:col
     for l = 1:row
         sigma_n2(l,k) = min(p_s(l,k-N+1:k));
