@@ -28,6 +28,7 @@ pnn = periodogram(x_seg,rectwin(length(x_seg(:,1))),length(x_seg(:,1)));
 % plot(pnn);
 %pnn = periodogram(x_seg,rectwin(length(x_seg(:,1))),length(x_seg(:,1)),fs);
 %% pure noise(overlap)
+%% peridogam
 x = ssn; % assgin noise
 L = 320; R = 160;
 zero_pad = mod(length(x),R);
@@ -39,14 +40,28 @@ while i~=length(x_pad)/R
     i = i+1;
 end
 pnn = pwelch(x_seg,rectwin(length(x_seg(:,1))),length(x_seg(:,1))/2,length(x_seg(:,1)));
+%% smoothed periodogram
+M = 10; % window size
+R = 160;
+T_sm = (M*R+R)/fs; %second
+alpha = (T_sm*fs/R-1)/(T_sm*fs/R+1);
+[~,col] = size(pnn);
+pnn_s = pnn;
+for j = M:col
+    window = pnn(:,j-M+1:j);
+    pnn_s(:,j) = window(:,1);
+    for k = 2:M
+        pnn_s(:,j) = alpha*pnn_s(:,j)+(1-alpha)*window(:,k);
+    end
+end
 %% noise psd estimation(noisy signal)
 %% VAD
 %% MS
 x = cs_ssn;
 sigma_n2 = ms_based_noise_psd(x,fs);
-figure;plot(real((sum(pnn))));hold on;plot(real((sum(sigma_n2))));
+figure;plot(real((sum(pnn))));hold on;plot(real((sum(pnn_s))));hold on;plot(real((sum(sigma_n2))));
 k = 25; % observe #k frequency
-figure;plot(10*log(real(pnn(k,:))));hold on;plot(10*log(real(sigma_n2(k,:))));
+figure;plot(10*log(real(pnn(k,:))),'--','Linewidth',0.3);hold on;plot(10*log(real(pnn_s(k,:))));hold on;plot(10*log(real(sigma_n2(k,:))),'Linewidth',1.5);
 %% MMSE
 time_int = 0.02;% second
 x = cs_bn;
