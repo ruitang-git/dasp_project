@@ -6,7 +6,7 @@ clear;
 [cs2,~] = audioread("D:\slides\EE4182 Digital Audio and Speech Processing\project\sound files for mini-project\clean_speech_2.wav");
 [cs,~] = audioread("D:\slides\EE4182 Digital Audio and Speech Processing\project\sound files for mini-project\clean_speech.wav");
 [ann,~] = audioread("D:\slides\EE4182 Digital Audio and Speech Processing\project\sound files for mini-project\aritificial_nonstat_noise.wav");
-seconds=30; range=fs*3+1:fs*(3+seconds);
+seconds=20; range=fs*3+1:fs*(3+seconds);
 bn=bn(range); ssn=ssn(range); cs2=cs2(range);cs=cs(range); ann=ann(range);
 %% assign data
 signal = cs;
@@ -38,7 +38,7 @@ while i~=length(x_pad)/R
     x_seg(:,i) = x_pad(i*R-R+1:(i+1)*R);
     i = i+1;
 end
-pnn = periodogram(x_seg,rectwin(length(x_seg(:,1))),length(x_seg(:,1)));
+pnn = 2*pi*L*periodogram(x_seg,rectwin(length(x_seg(:,1))),length(x_seg(:,1)),'twosided');
 %% smoothed periodogram
 M = 10; % window size
 T_sm = (M*R+R)/fs; %second
@@ -57,10 +57,9 @@ end
 %% MS
 sigma_n2_ms = ms_based_noise_psd(noisy_signal,fs);
 % figure;plot(real((sum(pnn))));hold on;plot(real((sum(pnn_s))));hold on;plot(real((sum(sigma_n2_ms))));
-k = 25; % observe #k frequency
-figure;plot(10*log(real(pnn(k,:))),'--','Linewidth',0.3);hold on;plot(10*log(real(pnn_s(k,:))));hold on;plot(10*log(real(sigma_n2_ms(k,:))),'Linewidth',1.5);
 %% MMSE
 sigma_n2_mmse = mmse_based_noise_psd(noisy_signal);
+k = 25; % observe #k frequency
 figure;plot(10*log(real(pnn(k,:))),'--','Linewidth',0.3);hold on;plot(10*log(real(pnn_s(k,:))));
 hold on;plot(10*log(real(sigma_n2_ms(k,:))),'Linewidth',1.5);hold on;plot(10*log(real(sigma_n2_mmse(k,:))),'Linewidth',1.5);
 title(['Noise PSD Estimation(K=',num2str(k),')']);
@@ -68,11 +67,13 @@ xlabel("time period");
 ylabel("noise psd(dB)");
 legend("periodogram","smoothed peridogram","minimum statistics(MS)","MMSE-SPP");
 %% signal psd estimation
-method = 'DD';
-sigma_n2 = sigma_n2_mmse;
-sigma_s2 = signal_psd(noisy_signal,sigma_n2,method);
+% method = 'DD';
+% sigma_n2 = sigma_n2_mmse;
+% sigma_s2 = signal_psd(noisy_signal,sigma_n2,method);
 %% Wiener filter
-signal_est_rec = wiener(noisy_signal,sigma_n2,sigma_s2);
+alpha = 0.98;
+sigma_n2 = pnn_s;
+signal_est_rec = wiener(noisy_signal,sigma_n2,alpha);
 %% multiple channel
 N = 100;
 figure;

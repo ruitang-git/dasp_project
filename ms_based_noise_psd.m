@@ -13,7 +13,7 @@ M = 10;
 T_sm = (M*R+R)/fs; %second
 alpha = (T_sm*fs/R-1)/(T_sm*fs/R+1);
 f = fft(x_seg);
-f = f(1:R+1,:);
+% f = f(1:R+1,:);
 f_2 = abs(f).^2;
 p = f_2;
 [row,col] = size(p);
@@ -37,7 +37,7 @@ for k = N:col
         sigma_n2(l,k) = min(p_s(l,k-N+1:k));
     end
 end
-sigma_n2 = sigma_n2./(2*pi*L);
-sigma_n2(2:end-1,:) = 2*sigma_n2(2:end-1,:);
+% sigma_n2 = sigma_n2./(2*pi*L);
+% sigma_n2(2:end-1,:) = 2*sigma_n2(2:end-1,:);
 
 

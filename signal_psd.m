@@ -22,7 +22,7 @@ for j = K:col
 end
 sigma_s2 = pss_s - sigma_n2;
 elseif strcmp(method,'DD')
-alpha = 0.97;
+alpha = 0.98;
 sigma_s2 = pss - sigma_n2;
 for i = 2:size(sigma_s2,2)
     sigma_s2(:,i) = alpha*(sigma_s2(:,i-1)) + (1-alpha)*max(sigma_s2(:,i),0);
