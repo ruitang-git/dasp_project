@@ -72,7 +72,7 @@ legend("periodogram","smoothed peridogram","minimum statistics(MS)","MMSE-SPP");
 % sigma_s2 = signal_psd(noisy_signal,sigma_n2,method);
 %% Wiener filter
 alpha = 0.98;
-sigma_n2 = pnn_s;
+sigma_n2 = sigma_n2_mmse;
 signal_est_rec = wiener(noisy_signal,sigma_n2,alpha);
 %% multiple channel
 N = 100;
