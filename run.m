@@ -6,7 +6,7 @@ clear;
 [cs2,~] = audioread("D:\slides\EE4182 Digital Audio and Speech Processing\project\sound files for mini-project\clean_speech_2.wav");
 [cs,~] = audioread("D:\slides\EE4182 Digital Audio and Speech Processing\project\sound files for mini-project\clean_speech.wav");
 [ann,~] = audioread("D:\slides\EE4182 Digital Audio and Speech Processing\project\sound files for mini-project\aritificial_nonstat_noise.wav");
-seconds=20; range=fs*3+1:fs*(3+seconds);
+seconds=10; range=fs*3+1:fs*(3+seconds);
 bn=bn(range); ssn=ssn(range); cs2=cs2(range);cs=cs(range); ann=ann(range);
 %% assign data
 signal = cs;
@@ -21,9 +21,13 @@ alpha = 0.98;
 method = 'DD';
 % method = 'ML';
 % method = 'DD';
-noise_psd_estimator = 'MS';
+noise_psd_estimator = 'MMSE';
 % noise_psd_estimator = 'MS';
 % noise_psd_estimator = 'MMSE';
+gain_function = 'spectral_subtrac';
+% gain_function = 'wiener';
+% gain_function = 'spectral_subtrac';
+
 
 %% pure noise(overlap)
 %% peridogam
@@ -87,7 +91,11 @@ if strcmp(noise_psd_estimator,"MMSE")
 elseif strcmp(noise_psd_estimator,"MS")
     sigma_n2 = sigma_n2_ms;
 end   
-[signal_est_rec,sigma_s2] = wiener(noisy_signal,sigma_n2,alpha,K,method);
+if strcmp(gain_function,'wiener')
+    [signal_est_rec,sigma_s2] = wiener(noisy_signal,sigma_n2,alpha,K,method);
+elseif strcmp(gain_function,'spectral_subtrac')
+    [signal_est_rec,sigma_s2] = spectral_subtraction(noisy_signal,sigma_n2,K);
+end
 %% performance assessment
 evaluate_denoising_metrics(signal,signal_est_rec);
 %% plot noise psd
@@ -113,4 +121,3 @@ subplot(3,1,2);
 plot(signal(N:end));
 subplot(3,1,3);
 plot(signal_est_rec(N:end));
-ylim([-0.5 0.5])
